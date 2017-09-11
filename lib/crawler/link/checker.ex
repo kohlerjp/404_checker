@@ -39,7 +39,7 @@ defmodule Crawler.Link.Checker do
     |> Floki.find("a")
     |> Floki.attribute("href")
     |> Enum.filter(&internal_link?(&1, base_url))
-    |> Enum.map(&Registry.add_link(link_path(&1), parent, depth))
+    |> Enum.map(&Registry.add_link(link_path(&1, base_url), parent, depth))
   end
 
   defp handle_error(link, reason) do
@@ -51,7 +51,7 @@ defmodule Crawler.Link.Checker do
     String.starts_with?(url, "/") || URI.parse(url).host == URI.parse(base_url).host
   end
 
-  defp link_path(url) do
-    URI.parse(url).path
+  defp link_path(url, base_url) do
+    String.trim(url, base_url)
   end
 end
