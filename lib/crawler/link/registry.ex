@@ -11,8 +11,8 @@ defmodule Crawler.Link.Registry do
     GenServer.call(__MODULE__, {:unchecked_links, depth})
   end
 
-  def broken_links() do
-    GenServer.call(__MODULE__, :broken_links)
+  def invalid_links() do
+    GenServer.call(__MODULE__, :invalid_links)
   end
 
   def add_link(link, parent, depth) do
@@ -36,9 +36,9 @@ defmodule Crawler.Link.Registry do
   def handle_call({:unchecked_links, depth}, _from, links) do
     {:reply, unchecked_links(links, depth), links}
   end
-  def handle_call(:broken_links, _from, links) do
-    broken_links = Enum.filter(links, fn {_url, link} -> match?({:error, _val}, link.result) end)
-    {:reply, broken_links, links}
+  def handle_call(:invalid_links, _from, links) do
+    invalid_links = Enum.filter(links, fn {_url, link} -> match?({:error, _val}, link.result) end)
+    {:reply, invalid_links, links}
   end
 
   def handle_cast({:add_link, {url, {result, parent, depth}}}, links) do

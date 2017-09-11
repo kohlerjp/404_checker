@@ -49,16 +49,16 @@ defmodule LinkRegistryTest do
     end
   end
 
-  describe "broken_links/0" do
+  describe "invalid_links/0" do
     test "only links with errors are returned" do
       add_link("/ok-link", "/parent", 0)
       add_link("/broken-link", "/parent", 0)
       update_link("/ok-link", :ok)
       update_link("/broken-link", {:error, 404})
 
-      broken_urls = broken_links() |> Enum.map(fn {url, _link} -> url end)
-      refute "/ok-link" in broken_urls
-      assert "/broken-link" in broken_urls
+      invalid_urls = invalid_links() |> Enum.map(fn {url, _link} -> url end)
+      refute "/ok-link" in invalid_urls
+      assert "/broken-link" in invalid_urls
     end
   end
 end

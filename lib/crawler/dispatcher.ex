@@ -12,9 +12,9 @@ defmodule Crawler.Dispatcher do
   end
 
   def loop(opts) do
-    {time, broken_links} = :timer.tc(fn -> do_loop(opts) end)
-    Printer.print_info(time, opts[:max_depth], broken_links)
-    pass_fail(broken_links) |> System.halt()
+    {time, invalid_links} = :timer.tc(fn -> do_loop(opts) end)
+    Printer.print_info(time, opts[:max_depth], invalid_links)
+    pass_fail(invalid_links) |> System.halt()
   end
 
   defp do_loop(opts) do
@@ -25,7 +25,7 @@ defmodule Crawler.Dispatcher do
       Registry.unchecked_links(depth) |> Enum.split(num_workers) |> process_list(opts[:base_url], depth, num_workers)
       DepthAgent.increase_depth()
     end
-    Registry.broken_links()
+    Registry.invalid_links()
   end
 
   defp process_list({[], []}, _base_url, _depth, _num_workers), do: :ok
