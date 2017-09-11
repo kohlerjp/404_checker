@@ -4,7 +4,7 @@ defmodule Crawler.Dispatcher do
   """
   alias Crawler.{Link.Registry, Link.Checker, Printer, DepthAgent}
 
-  @default_opts [max_depth: 3, workers: 20, base_url: "localhost:4001"]
+  @default_opts [max_depth: 3, workers: 20, base_url: "http://localhost:4001"]
 
   def start_link(user_opts) do
     opts = Keyword.merge(@default_opts, user_opts)
