@@ -1,5 +1,13 @@
 defmodule Crawler.Link do
 
+  @moduledoc """
+  Data structure represent a link:
+  * url - The URL of this link
+  * parent - The URL which first contained a link to this url
+  * depth - The depth at which this url is located
+  * result - The validity of this link
+  """
+
   @type result :: :unknown | :ok | {:error, integer | atom} | :processing
 
   defstruct [

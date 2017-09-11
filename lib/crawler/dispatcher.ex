@@ -1,4 +1,7 @@
 defmodule Crawler.Dispatcher do
+  @moduledoc """
+  Loops through remaining links and creates tasks to check those links for validity
+  """
   alias Crawler.{Link.Registry, Link.Checker, Printer, DepthAgent}
 
   @default_opts [max_depth: 3, workers: 20, base_url: "localhost:4001"]

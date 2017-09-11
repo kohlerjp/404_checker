@@ -1,4 +1,7 @@
 defmodule Crawler.DepthAgent do
+  @moduledoc """
+  Keeps track of the current depth travelled
+  """
   use Agent
 
   def start_link([]) do
