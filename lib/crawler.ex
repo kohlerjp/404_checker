@@ -1,2 +1,0 @@
-defmodule Crawler do
-end
