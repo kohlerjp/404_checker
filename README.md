@@ -11,14 +11,10 @@ mix crawl <base_url>
 
 `--num-workers:` Maximum amount of concurrent workers making requests to the provided URL. Defaults to 20.
 
-## Installation
-
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `link` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
-  [{:crawler, "~> 0.1.0"}]
+   [{:crawler, git: "https://github.com/kohlerjp/404_checker"}]
 end
 ```
 
