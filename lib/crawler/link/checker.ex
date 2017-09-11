@@ -11,6 +11,7 @@ defmodule Crawler.Link.Checker do
     :ok
   end
   def verify_link(link, base_url, depth) do
+    if link == "/schedules/Orange/schedule?origin=place-state&direction_id=1", do: IO.inspect "FOUND THE SPECIFIC LINK"
     case HTTPoison.get(base_url <> link, recv_timeout: 10_000) do
       {:ok, %HTTPoison.Response{status_code: code} = response} when code in 200..399 ->
         handle_success(link, response, depth, base_url)
@@ -26,12 +27,17 @@ defmodule Crawler.Link.Checker do
   end
 
   defp add_page_links(response, parent, depth, base_url) do
-    content_type = response.headers |> Map.new() |> Map.get("content-type", "")
-    if String.match?(content_type, ~r/text\/html/) do
+    if String.match?(get_content_type(response), ~r/text\/html/) do
       do_add_page_links(response.body, parent, depth, base_url)
     else
       :ok
     end
+  end
+
+  defp get_content_type(response) do
+    response.headers
+    |> Map.new(fn {header, val} -> {String.downcase(header), val} end)
+    |> Map.get("content-type", "")
   end
 
   defp do_add_page_links(body, parent, depth, base_url) do
@@ -48,7 +54,7 @@ defmodule Crawler.Link.Checker do
   end
 
   defp internal_link?(url, base_url) do
-    String.starts_with?(url, "/") || URI.parse(url).host == URI.parse(base_url).host
+    String.starts_with?(url, "/") || String.starts_with?(url, base_url)
   end
 
   defp link_path(url, base_url) do
