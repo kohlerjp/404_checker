@@ -42,7 +42,7 @@ defmodule Crawler.Dispatcher do
 
   defp do_process(links, base_url, depth) do
     links
-    |> Task.async_stream(&Checker.verify_link(&1, base_url, depth), timeout: 8000)
+    |> Task.async_stream(&Checker.verify_link(&1, base_url, depth), timeout: 10_500)
     |> Enum.map(& &1)
   end
 
