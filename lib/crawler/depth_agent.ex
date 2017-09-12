@@ -8,11 +8,11 @@ defmodule Crawler.DepthAgent do
     Agent.start_link(fn -> 0 end, name: __MODULE__)
   end
 
-  def increase_depth() do
+  def increase_depth do
     Agent.update(__MODULE__, fn d -> d + 1 end)
   end
 
-  def current_depth() do
+  def current_depth do
     Agent.get(__MODULE__, fn d -> d end)
   end
 end

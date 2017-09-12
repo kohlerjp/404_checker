@@ -2,29 +2,37 @@ defmodule Crawler.Link.Registry do
   alias Crawler.Link
   use GenServer
 
+  @moduledoc """
+
+  """
+
   # Client
   def start_link(_opts) do
     GenServer.start_link(__MODULE__, "/", name: __MODULE__)
   end
 
+  @doc "Retuns all links that still need to be checked"
   def unchecked_links(depth) do
     GenServer.call(__MODULE__, {:unchecked_links, depth})
   end
 
-  def invalid_links() do
+  @doc "Returns all links that returned an error when retrieved"
+  def invalid_links do
     GenServer.call(__MODULE__, :invalid_links)
   end
 
+  @doc "Add a new link to be checked"
   def add_link(link, parent, depth) do
     GenServer.cast(__MODULE__, {:add_link, {link, {:unknown, parent, depth}}})
   end
 
+  @doc "Update the given link with it's result"
   def update_link(link, result) do
     GenServer.cast(__MODULE__, {:update_link, {link, result}})
   end
 
   @doc "Reset any links that may have been dropped"
-  def reset_dropped() do
+  def reset_dropped do
     GenServer.cast(__MODULE__, :reset_processing)
   end
 
@@ -37,12 +45,15 @@ defmodule Crawler.Link.Registry do
     {:reply, unchecked_links(links, depth), links}
   end
   def handle_call(:invalid_links, _from, links) do
-    invalid_links = Enum.filter(links, fn {_url, link} -> match?({:error, _val}, link.result) end)
+    invalid? = fn {_url, link} -> match?({:error, _val}, link.result) end
+    invalid_links = Enum.filter(links, invalid?)
     {:reply, invalid_links, links}
   end
 
   def handle_cast({:add_link, {url, {result, parent, depth}}}, links) do
-    {:noreply, Map.update(links, url, %Link{url: url, parent: parent, result: result, depth: depth + 1}, fn val -> val end)}
+    new_link = %Link{url: url, parent: parent, result: result, depth: depth + 1}
+    updated_map = Map.update(links, url, new_link, fn val -> val end)
+    {:noreply, updated_map}
   end
 
   def handle_cast({:update_link, {url, status}}, links) do
@@ -57,7 +68,11 @@ defmodule Crawler.Link.Registry do
 
   defp unchecked_links(links, depth) do
     links
-    |> Enum.filter(fn {_url, link} -> link.result == :unknown && link.depth == depth end)
+    |> Enum.filter(&unchecked_at_depth?(&1, depth))
     |> Enum.map(fn {url, _link} -> url end)
+  end
+
+  defp unchecked_at_depth?({_url, link}, depth) do
+    link.result == :unknown && link.depth == depth
   end
 end

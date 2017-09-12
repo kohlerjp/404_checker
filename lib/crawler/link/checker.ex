@@ -11,10 +11,9 @@ defmodule Crawler.Link.Checker do
     :ok
   end
   def verify_link(link, base_url, depth) do
-    if link == "/schedules/Orange/schedule?origin=place-state&direction_id=1", do: IO.inspect "FOUND THE SPECIFIC LINK"
     case HTTPoison.get(base_url <> link, recv_timeout: 10_000) do
-      {:ok, %HTTPoison.Response{status_code: code} = response} when code in 200..399 ->
-        handle_success(link, response, depth, base_url)
+      {:ok, %HTTPoison.Response{status_code: code} = response}
+        when code in 200..399 -> handle_success(link, response, depth, base_url)
       {:ok, %HTTPoison.Response{status_code: code}} -> handle_error(link, code)
       {:error, %HTTPoison.Error{reason: reason}}  -> handle_error(link, reason)
     end

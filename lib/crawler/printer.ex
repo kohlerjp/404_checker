@@ -5,7 +5,6 @@ defmodule Crawler.Printer do
   Module used for printing information about the scraping results
   """
 
-
   def print_info(time, max_depth, []) do
     IO.puts("\n#{IO.ANSI.green()}PASSED SUCCESSFULLY#{IO.ANSI.white()}")
     print_time(time)
@@ -20,7 +19,10 @@ defmodule Crawler.Printer do
   end
 
   defp print_unchecked_links(max_depth) do
-    unchecked_count = Registry.unchecked_links(max_depth + 1) |> Enum.count
+    unchecked_count = max_depth
+                      |> Kernel.+(1)
+                      |> Registry.unchecked_links()
+                      |> Enum.count
     IO.puts("#{unchecked_count} links not checked")
   end
 
@@ -33,13 +35,14 @@ defmodule Crawler.Printer do
     IO.write(IO.ANSI.white())
   end
 
-  def print_success() do
+  def print_success do
     Task.async(fn -> IO.write("#{IO.ANSI.green()}.#{IO.ANSI.white()}") end)
   end
 
   defp print_time(time) do
-    seconds = (time / 1000000) |> Float.round(2)
-    IO.puts("Finished in #{seconds} seconds (#{(seconds / 60) |> Float.round(2)} minutes)")
+    seconds = time |> Kernel./(1_000_000) |> Float.round(2)
+    minutes = seconds |> Kernel./(60) |> Float.round(2)
+    IO.puts("Finished in #{seconds} seconds (#{minutes} minutes)")
   end
 
   defp print_invalid_links(links) do

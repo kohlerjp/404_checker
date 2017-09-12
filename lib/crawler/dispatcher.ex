@@ -14,7 +14,7 @@ defmodule Crawler.Dispatcher do
   def loop(opts) do
     {time, invalid_links} = :timer.tc(fn -> do_loop(opts) end)
     Printer.print_info(time, opts[:max_depth], invalid_links)
-    pass_fail(invalid_links) |> System.halt()
+    invalid_links |> pass_fail() |> System.halt()
   end
 
   defp do_loop(opts) do
@@ -22,7 +22,10 @@ defmodule Crawler.Dispatcher do
     Registry.reset_dropped()
     num_workers = opts[:workers]
     for depth <- current_depth..opts[:max_depth] do
-      Registry.unchecked_links(depth) |> Enum.split(num_workers) |> process_list(opts[:base_url], depth, num_workers)
+      depth
+      |> Registry.unchecked_links()
+      |> Enum.split(num_workers)
+      |> process_list(opts[:base_url], depth, num_workers)
       DepthAgent.increase_depth()
     end
     Registry.invalid_links()
@@ -41,8 +44,9 @@ defmodule Crawler.Dispatcher do
   end
 
   defp do_process(links, base_url, depth) do
+    verify = fn link -> Checker.verify_link(link, base_url, depth) end
     links
-    |> Task.async_stream(&Checker.verify_link(&1, base_url, depth), timeout: 10_500)
+    |> Task.async_stream(verify, timeout: 10_500)
     |> Enum.map(& &1)
   end
 
