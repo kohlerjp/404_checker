@@ -28,3 +28,8 @@ use Mix.Config
 # here (which is why it is important to import them last).
 #
 #     import_config "#{Mix.env}.exs"
+#
+
+config :crawler, http_client: Crawler.HTTPClient.PoisonClient
+
+import_config "#{Mix.env}.exs"
