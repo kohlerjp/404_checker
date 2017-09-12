@@ -4,7 +4,7 @@ defmodule Crawler.Dispatcher do
   """
   alias Crawler.{Link.Registry, Link.Checker, Printer, DepthAgent}
 
-  @default_opts [max_depth: 3, workers: 10, base_url: "http://localhost:4001"]
+  @default_opts [max_depth: 3, workers: 5, base_url: "http://localhost:4001"]
 
   def process_links(user_opts) do
     opts = Keyword.merge(@default_opts, user_opts)
@@ -16,7 +16,7 @@ defmodule Crawler.Dispatcher do
   defp do_process_links(opts) do
     current_depth = DepthAgent.current_depth()
     Registry.reset_dropped()
-    task_opts = [timeout: 10_500, max_concurrency: opts[:workers]]
+    task_opts = [timeout: 20_000, max_concurrency: opts[:workers]]
     for depth <- current_depth..opts[:max_depth] do
       verify = fn link -> Checker.verify_link(link, opts[:base_url], depth) end
       depth

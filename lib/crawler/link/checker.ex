@@ -13,7 +13,7 @@ defmodule Crawler.Link.Checker do
   def verify_link(link, base_url, depth) do
     url = base_url <> link
     client = Application.get_env(:crawler, :http_client)
-    case apply(client, :get, [url, [recv_timeout: 10_000]]) do
+    case apply(client, :get, [url, [recv_timeout: 15_000]]) do
       {:ok, %HTTPoison.Response{status_code: code} = response}
         when code in 200..399 -> handle_success(link, response, depth, base_url)
       {:ok, %HTTPoison.Response{status_code: code}} -> handle_error(link, code)

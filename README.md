@@ -9,7 +9,7 @@ mix crawl <base_url>
 #### Options
 `--max-depth`: Maximum depth the scraper will travel. Defaults to 3.
 
-`--num-workers:` Maximum amount of concurrent workers making requests to the provided URL. Defaults to 20.
+`--num-workers:` Maximum amount of concurrent workers making requests to the provided URL. Defaults to 5.
 
 
 ```elixir
