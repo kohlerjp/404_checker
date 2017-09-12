@@ -1,7 +1,6 @@
 defmodule Crawler.Supervisor do
-  alias Crawler.{Link.Registry, DepthAgent, Dispatcher}
+  alias Crawler.{Link.Registry, DepthAgent}
 
-  use Supervisor
   import Supervisor.Spec
 
   def start_link(opts) do
