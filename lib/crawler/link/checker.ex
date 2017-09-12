@@ -6,13 +6,14 @@ defmodule Crawler.Link.Checker do
   """
   alias Crawler.Link.Registry
   alias Crawler.Printer
+  alias Crawler.HTTPClient.PoisonClient
 
   def verify_link(:done, _base_url, _depth) do
     :ok
   end
   def verify_link(link, base_url, depth) do
     url = base_url <> link
-    client = Application.get_env(:crawler, :http_client)
+    client = Application.get_env(:crawler, :http_client, PoisonClient)
     case apply(client, :get, [url, [recv_timeout: 15_000]]) do
       {:ok, %HTTPoison.Response{status_code: code} = response}
         when code in 200..399 -> handle_success(link, response, depth, base_url)
