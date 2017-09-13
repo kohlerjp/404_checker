@@ -29,7 +29,8 @@ defmodule Crawler.Link.Checker do
   end
 
   defp add_page_links(response, parent, depth, base_url) do
-    if String.match?(get_content_type(response), ~r/text\/html/) do
+    content_type = get_content_type(response)
+    if String.match?(content_type, ~r/text\/html/) do
       do_add_page_links(response.body, parent, depth, base_url)
     else
       :ok
@@ -38,8 +39,8 @@ defmodule Crawler.Link.Checker do
 
   defp get_content_type(response) do
     response.headers
-    |> Map.new(fn {header, val} -> {String.downcase(header), val} end)
-    |> Map.get("content-type", "")
+    |> Enum.find({nil, ""}, fn {header, _val} -> String.downcase(header) == "content-type" end)
+    |> elem(1)
   end
 
   defp do_add_page_links(body, parent, depth, base_url) do

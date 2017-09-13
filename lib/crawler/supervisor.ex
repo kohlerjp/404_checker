@@ -10,7 +10,7 @@ defmodule Crawler.Supervisor do
   def init(_opts) do
     children = [
       Registry,
-      DepthAgent
+      worker(DepthAgent, [[]], [])
     ]
 
     Supervisor.init(children, strategy: :one_for_one)
