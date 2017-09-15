@@ -2,7 +2,7 @@ defmodule Crawler.Dispatcher do
   @moduledoc """
   Loops through remaining links and creates tasks to check those links for validity
   """
-  alias Crawler.{Link.Registry, Link.Checker, Printer, DepthAgent}
+  alias Crawler.{Link.Registry, Link.Checker, Printer}
 
   @default_opts [max_depth: 3, workers: 5, base_url: "http://localhost:4001"]
 
@@ -14,16 +14,14 @@ defmodule Crawler.Dispatcher do
   end
 
   defp do_process_links(opts) do
-    current_depth = DepthAgent.current_depth()
     Registry.reset_dropped()
     task_opts = [timeout: 20_000, max_concurrency: opts[:workers]]
-    for depth <- current_depth..opts[:max_depth] do
+    for depth <- 0..opts[:max_depth] do
       verify = fn link -> Checker.verify_link(link, opts[:base_url], depth) end
       depth
       |> Registry.unchecked_links()
       |> Task.async_stream(verify, task_opts)
       |> Enum.map(& &1)
-      DepthAgent.increase_depth()
     end
     Registry.invalid_links()
   end
